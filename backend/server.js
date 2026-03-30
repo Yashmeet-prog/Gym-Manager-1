@@ -1,5 +1,9 @@
-const { writeData } = require('./database');
+const { readData, writeData } = require('./database');
 const bcrypt = require('bcrypt');
+
+const express = require('express');
+const cors = require('cors');
+const jwt = require('jsonwebtoken');
 
 const data = readData();
 
@@ -9,14 +13,10 @@ if (data.users.length === 0) {
     writeData(data);
 }
 
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const initializeDatabase = require('./database');
-
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 app.get('/', (req, res) => {
     res.send('Backend is running 🚀');
 });
@@ -25,9 +25,6 @@ app.get('/api/test', (req, res) => {
 });
 const JWT_SECRET = 'super-secret-gym-key-123';
 
-let db;
-
-// Authenticate middleware
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -275,11 +272,9 @@ app.post('/api/reminders/whatsapp', authenticateToken, async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-initializeDatabase().then(database => {
-    db = database;
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}).catch(err => {
-    console.error('Failed to initialize database', err);
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
+
