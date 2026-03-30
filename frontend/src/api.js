@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://gym-backend-8s2i.onrender.com';
 
 export const loginAdmin = async (username, password) => {
     const res = await fetch(`${API_URL}/auth/login`, {
