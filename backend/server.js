@@ -36,7 +36,9 @@ const authenticateToken = (req, res, next) => {
 app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
     try {
-        const user = await db.get('SELECT * FROM admin_users WHERE username = ?', [username]);
+        const user = db
+            .prepare('SELECT * FROM admin_users WHERE username = ?')
+            .get(username);
         if (user && await bcrypt.compare(password, user.password)) {
             const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
             res.json({ token, username: user.username });
