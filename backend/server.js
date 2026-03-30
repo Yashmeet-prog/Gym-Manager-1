@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
@@ -7,7 +9,12 @@ const initializeDatabase = require('./database');
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.get('/', (req, res) => {
+    res.send('Backend is running 🚀');
+});
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'API working ✅' });
+});
 const JWT_SECRET = 'super-secret-gym-key-123';
 
 let db;
@@ -44,14 +51,14 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/dashboard', authenticateToken, async (req, res) => {
     try {
         const totalResult = await db.get('SELECT COUNT(*) as count FROM members');
-        
+
         const activeResult = await db.get(`
             SELECT COUNT(*) as count FROM members 
             WHERE date(expiry_date) > date('now')
         `);
 
         const membersRaw = await db.all('SELECT * FROM members');
-        
+
         let activeCount = 0;
         let paidCount = 0;
         let partialCount = 0;
@@ -63,7 +70,7 @@ app.get('/api/dashboard', authenticateToken, async (req, res) => {
         membersRaw.forEach(m => {
             const isExpired = new Date(m.expiry_date) < new Date();
             let status = 'Pending';
-            
+
             const paid = m.amount_paid || 0;
             const total = m.fee || 0;
 
@@ -122,7 +129,7 @@ app.get('/api/dashboard', authenticateToken, async (req, res) => {
             });
             months.push({ name: monthStr, members: count });
         }
-        
+
         res.json({
             totalMembers: membersRaw.length,
             activeMembers: activeCount,
@@ -145,7 +152,7 @@ app.get('/api/dashboard', authenticateToken, async (req, res) => {
 app.get('/api/members', authenticateToken, async (req, res) => {
     try {
         const members = await db.all('SELECT * FROM members ORDER BY id DESC');
-        
+
         // Enrich data with formatted calculations
         const enrichedMembers = members.map(m => {
             let total_months = (m.plan_months || 0) + ((m.plan_days || 0) > 0 ? 1 : 0);
@@ -168,7 +175,7 @@ app.get('/api/members', authenticateToken, async (req, res) => {
                 computed_status
             };
         });
-        
+
         res.json(enrichedMembers);
     } catch (err) {
         res.status(500).json({ error: err.message });

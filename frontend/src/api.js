@@ -1,7 +1,7 @@
 const API_URL = 'https://gym-backend-8s2i.onrender.com';
 
 export const loginAdmin = async (username, password) => {
-    const res = await fetch(`${API_URL}/auth/login`, {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -16,13 +16,13 @@ const getHeaders = () => ({
 });
 
 export const getDashboard = async () => {
-    const res = await fetch(`${API_URL}/dashboard`, { headers: getHeaders() });
+    const res = await fetch(`${API_URL}/api/dashboard`, { headers: getHeaders() });
     if (!res.ok) throw new Error('Failed to fetch dashboard');
     return res.json();
 };
 
 export const getMembers = async () => {
-    const res = await fetch(`${API_URL}/members`, { headers: getHeaders() });
+    const res = await fetch(`${API_URL}/api/members`, { headers: getHeaders() });
     if (!res.ok) throw new Error('Failed to fetch members');
     return res.json();
 };
