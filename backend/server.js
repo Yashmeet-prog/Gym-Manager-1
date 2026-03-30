@@ -25,6 +25,28 @@ app.get('/api/test', (req, res) => {
 });
 const JWT_SECRET = 'super-secret-gym-key-123';
 
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+
+    const data = readData();
+
+    const user = data.users.find(u => u.username === username);
+
+    if (!user) {
+        return res.status(400).json({ error: 'User not found' });
+    }
+
+    const isMatch = bcrypt.compareSync(password, user.password);
+
+    if (!isMatch) {
+        return res.status(400).json({ error: 'Invalid password' });
+    }
+
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token });
+});
+
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
