@@ -275,20 +275,22 @@ app.delete('/api/members/:id', authenticateToken, async (req, res) => {
     }
 });
 
-app.post('/api/reminders/whatsapp', authenticateToken, async (req, res) => {
+app.post('/api/reminders/whatsapp', authenticateToken, (req, res) => {
     const { memberId } = req.body;
-    try {
-        const member = await db.get('SELECT * FROM members WHERE id = ?', [memberId]);
-        if (!member) {
-            return res.status(404).json({ error: 'Member not found' });
-        }
-        // Wait 1.5 seconds to simulate API request
-        setTimeout(() => {
-            res.json({ message: `WhatsApp reminder successfully scheduled for ${member.name} (${member.phone})!` });
-        }, 1500);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+
+    const data = readData();
+
+    const member = data.members?.find(m => m.id === memberId);
+
+    if (!member) {
+        return res.status(404).json({ error: 'Member not found' });
     }
+
+    setTimeout(() => {
+        res.json({
+            message: `WhatsApp reminder successfully scheduled for ${member.name} (${member.phone})`
+        });
+    }, 1500);
 });
 
 const PORT = process.env.PORT || 5000;
