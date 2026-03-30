@@ -269,9 +269,6 @@ app.post('/api/reminders/whatsapp', authenticateToken, async (req, res) => {
     }
 });
 
-
-const PORT = process.env.PORT || 5000;
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
