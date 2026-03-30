@@ -278,7 +278,18 @@ app.delete('/api/members/:id', authenticateToken, async (req, res) => {
 app.post('/api/reminders/whatsapp', authenticateToken, (req, res) => {
     const { memberId } = req.body;
 
-    const data = readData();
+    let data = readData();
+
+    if (!data.members) {
+        data.members = [
+            {
+                id: 1,
+                name: "Yash",
+                phone: "9999999999"
+            }
+        ];
+        writeData(data);
+    }
     console.log("DATA:", data);
     const member = data.members?.find(m => m.id === memberId);
 
