@@ -1,4 +1,13 @@
+const { writeData } = require('./database');
+const bcrypt = require('bcrypt');
 
+const data = readData();
+
+if (data.users.length === 0) {
+    const hashed = bcrypt.hashSync('admin123', 10);
+    data.users.push({ username: 'admin', password: hashed });
+    writeData(data);
+}
 
 const express = require('express');
 const cors = require('cors');
@@ -36,9 +45,11 @@ const authenticateToken = (req, res, next) => {
 app.post('/api/auth/login', async (req, res) => {
     const { username, password } = req.body;
     try {
-        const user = db
-            .prepare('SELECT * FROM admin_users WHERE username = ?')
-            .get(username);
+        const { readData } = require('./database');
+
+        const data = readData();
+
+        const user = data.users.find(u => u.username === username);
         if (user && await bcrypt.compare(password, user.password)) {
             const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
             res.json({ token, username: user.username });
