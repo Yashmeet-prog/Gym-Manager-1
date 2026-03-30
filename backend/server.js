@@ -279,7 +279,7 @@ app.post('/api/reminders/whatsapp', authenticateToken, (req, res) => {
     const { memberId } = req.body;
 
     const data = readData();
-
+    console.log("DATA:", data);
     const member = data.members?.find(m => m.id === memberId);
 
     if (!member) {
